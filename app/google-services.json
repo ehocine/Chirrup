@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "575963754831",
+    "project_id": "chirrup-18073",
+    "storage_bucket": "chirrup-18073.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575963754831:android:231045ee499f73fa0cd53a",
+        "android_client_info": {
+          "package_name": "com.hocel.chirrup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575963754831-4q4fjcih4da5lb2e0fpn8v01f6vj6tg1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqU4glMfK_hYjIm-o6ub4lQyHihTju6sg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575963754831-4q4fjcih4da5lb2e0fpn8v01f6vj6tg1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
