@@ -1,5 +1,7 @@
 package com.hocel.chirrup.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -28,4 +30,12 @@ fun hasInternetConnection(context: Context): Boolean {
         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
         else -> false
     }
+}
+
+fun copyToClipboard(context: Context, text: String) {
+    val clipboardManager =
+        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipData = ClipData.newPlainText("text", text)
+    clipboardManager.setPrimaryClip(clipData)
+    "Copied to clipboard".toast(context, Toast.LENGTH_SHORT)
 }

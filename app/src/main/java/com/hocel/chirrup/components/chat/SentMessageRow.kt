@@ -2,10 +2,7 @@ package com.hocel.chirrup.components.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -47,7 +44,7 @@ fun SentMessageRow(
             fontSize = 13.sp,
             color = TextColor,
         )
-
+        Spacer(modifier = Modifier.height(12.dp))
         // This is chat bubble
         ChatBubbleConstraints(
             modifier = Modifier

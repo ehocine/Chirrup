@@ -296,7 +296,10 @@ fun ChatScreen(
                                     true -> {
                                         ReceivedMessageRow(
                                             text = message.message,
-                                            messageTime = convertTimeStampToDateAndTime(message.date)
+                                            messageTime = convertTimeStampToDateAndTime(message.date),
+                                            onCopyClicked = {
+                                                copyToClipboard(context = context, text = it)
+                                            }
                                         )
                                     }
                                     false -> {
