@@ -18,14 +18,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hocel.chirrup.ui.theme.ButtonColor
 import com.hocel.chirrup.ui.theme.TextColor
-import com.hocel.chirrup.utils.LoadingState
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 internal fun ChatInput(
     modifier: Modifier = Modifier,
-    generatingResponseState: LoadingState,
+    responseState: Boolean,
     canSendMessage: Boolean = true,
     onMessageSend: (String) -> Unit,
 ) {
@@ -45,7 +45,7 @@ internal fun ChatInput(
                 .focusable(true),
             value = input,
             onValueChange = { input = it },
-            enabled = generatingResponseState != LoadingState.LOADING,
+            enabled = responseState,
             textStyle = TextStyle(
                 color = MaterialTheme.colors.TextColor,
                 fontWeight = FontWeight.W500,
@@ -68,7 +68,8 @@ internal fun ChatInput(
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Send,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.ButtonColor
                     )
                 }
             }

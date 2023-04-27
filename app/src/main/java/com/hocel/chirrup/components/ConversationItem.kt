@@ -31,8 +31,6 @@ fun ConversationItem(
     enableDeleteAction: Boolean = false,
     onDeleteConversation: (conversation: Conversation) -> Unit
 ) {
-
-
     val delete = SwipeAction(
         onSwipe = {
             onDeleteConversation(conversation)

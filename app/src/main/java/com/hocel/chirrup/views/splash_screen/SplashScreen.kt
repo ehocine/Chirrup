@@ -2,6 +2,7 @@ package com.hocel.chirrup.views.splash_screen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.hocel.chirrup.navigation.Screens
+import com.hocel.chirrup.ui.theme.BackgroundColor
 import com.hocel.chirrup.ui.theme.TextColor
 import com.hocel.chirrup.utils.LoadingState
 import com.hocel.chirrup.utils.userLoggedIn
@@ -54,7 +56,12 @@ fun SplashScreen(
 @Composable
 fun SplashContent(alpha: Float) {
 
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.BackgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
         Column(
             Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

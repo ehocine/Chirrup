@@ -38,7 +38,6 @@ fun TextMessageInsideBubble(
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
-    messageStat: @Composable () -> Unit,
     onMeasure: ((ChatRowData) -> Unit)? = null
 ) {
     val chatRowData = remember { ChatRowData() }
@@ -69,16 +68,12 @@ fun TextMessageInsideBubble(
                 chatRowData.textWidth = textLayoutResult.size.width
             }
         )
-//        messageStat()
     }
 
     Layout(
         modifier = modifier,
         content = content
     ) { measurables: List<Measurable>, constraints: Constraints ->
-
-//        if (measurables.size != 2)
-//            throw IllegalArgumentException("There should be 2 components for this layout")
 
         val placeables: List<Placeable> = measurables.map { measurable ->
             // Measure each child maximum constraints since message can cover all of the available
@@ -87,18 +82,12 @@ fun TextMessageInsideBubble(
         }
 
         val message = placeables.first()
-//        val status = placeables.last()
 
-        // calculate chat row dimensions are not  based on message and status positions
         if ((chatRowData.rowWidth == 0 || chatRowData.rowHeight == 0) || chatRowData.text != text) {
-            // Constrain with max width instead of longest sibling
-            // since this composable can be longest of siblings after calculation
+
             chatRowData.parentWidth = constraints.maxWidth
-//            calculateChatWidthAndHeight(chatRowData, message, status)
-            calculateChatWidthAndHeight(chatRowData, message, null)
-            // Parent width of this chat row is either result of width calculation
-            // or quote or other sibling width if they are longer than calculated width.
-            // minWidth of Constraint equals (text width + horizontal padding)
+            calculateChatWidthAndHeight(chatRowData, message)
+
             chatRowData.parentWidth =
                 chatRowData.rowWidth.coerceAtLeast(minimumValue = constraints.minWidth)
         }
@@ -107,14 +96,7 @@ fun TextMessageInsideBubble(
         onMeasure?.invoke(chatRowData)
 
         layout(width = chatRowData.parentWidth, height = chatRowData.rowHeight) {
-
             message.placeRelative(0, 0)
-            // set left of status relative to parent because other elements could result this row
-            // to be long as longest composable
-//            status.placeRelative(
-//                chatRowData.parentWidth - status.width,
-//                chatRowData.rowHeight - status.height
-//            )
         }
     }
 }

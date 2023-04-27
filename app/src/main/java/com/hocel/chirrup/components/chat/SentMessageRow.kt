@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hocel.chirrup.ui.theme.SentBubbleColor
 import com.hocel.chirrup.ui.theme.TextColor
 
@@ -39,15 +40,15 @@ fun SentMessageRow(
                 bottom = 10.dp
             )
     ) {
-        // This is chat bubble
-
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = messageTime,
-            style = MaterialTheme.typography.overline,
+            style = MaterialTheme.typography.caption,
+            fontSize = 13.sp,
             color = MaterialTheme.colors.TextColor,
         )
 
+        // This is chat bubble
         ChatBubbleConstraints(
             modifier = Modifier
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp))
@@ -55,24 +56,17 @@ fun SentMessageRow(
                 .clickable { },
             content = {
                 TextMessageInsideBubble(
+                    text = text,
                     modifier = Modifier.padding(
                         start = 8.dp,
                         top = 4.dp,
                         end = 4.dp,
                         bottom = 4.dp
                     ),
-                    text = text,
+                    lineHeight = 20.sp,
                     color = Color.White,
-                    style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Medium,
-                    messageStat = {
-                        Text(
-                            modifier = Modifier.padding(end = 8.dp),
-                            text = messageTime,
-                            style = MaterialTheme.typography.overline,
-                            color = Color.White,
-                        )
-                    }
+                    style = MaterialTheme.typography.body1
                 )
             }
         )

@@ -13,13 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hocel.chirrup.ui.theme.ReceivedBubbleColor
 import com.hocel.chirrup.ui.theme.ReceivedTextColor
 import com.hocel.chirrup.ui.theme.TextColor
-import com.hocel.chirrup.ui.theme.grayText
 
 @Composable
 fun ReceivedMessageRow(
@@ -41,7 +40,8 @@ fun ReceivedMessageRow(
         Text(
             modifier = Modifier.padding(end = 8.dp),
             text = messageTime,
-            style = MaterialTheme.typography.overline,
+            style = MaterialTheme.typography.caption,
+            fontSize = 13.sp,
             color = MaterialTheme.colors.TextColor,
         )
 
@@ -53,18 +53,17 @@ fun ReceivedMessageRow(
                 .clickable { },
             content = {
                 TextMessageInsideBubble(
+                    text = text,
                     modifier = Modifier.padding(
                         start = 4.dp,
                         top = 4.dp,
                         end = 8.dp,
                         bottom = 4.dp
                     ),
-                    text = text,
+                    lineHeight = 20.sp,
                     color = MaterialTheme.colors.ReceivedTextColor,
-                    style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Medium,
-                    messageStat = {
-                    }
+                    style = MaterialTheme.typography.body1
                 )
             }
         )

@@ -41,9 +41,13 @@ val Colors.ReceivedTextColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) grayText else grayTextNight
 
-val Colors.BackgroundColor: Color
+/*val Colors.BackgroundColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) Color.White else Color.Black
+    */
+val Colors.BackgroundColor: Color
+    @Composable
+    get() = if (!isSystemInDarkTheme()) blueBG else darkBackground
 
 val Colors.TextColor: Color
     @Composable
@@ -72,3 +76,7 @@ val Colors.BottomSheetBackground: Color
 val Colors.DialogNoText: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blue else Color.White
+
+val Colors.SwitcherBackground: Color
+    @Composable
+    get() = if (!isSystemInDarkTheme()) Color.White else Color.Black

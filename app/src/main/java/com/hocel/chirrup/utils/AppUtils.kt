@@ -12,13 +12,7 @@ fun String.toast(context: Context, length: Int = Toast.LENGTH_SHORT) =
 
 fun convertTimeStampToDateAndTime(epoch: Long): String {
     val date = Date(epoch)
-    val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US)
-    return sdf.format(date)
-}
-
-fun convertTimeStampToDate(epoch: Long): String {
-    val date = Date(epoch)
-    val sdf = SimpleDateFormat("yyyyMMddHHmmss", Locale.US)
+    val sdf = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.US)
     return sdf.format(date)
 }
 

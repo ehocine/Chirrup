@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -27,22 +26,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hocel.chirrup.components.DisplayLoadingDialog
-import com.hocel.chirrup.components.SaveConversationSheetContent
-import com.hocel.chirrup.components.WatchAdDialog
+import com.hocel.chirrup.components.*
 import com.hocel.chirrup.components.chat.ChatInput
 import com.hocel.chirrup.components.chat.ReceivedMessageRow
 import com.hocel.chirrup.components.chat.SentMessageRow
 import com.hocel.chirrup.models.ChatMessage
 import com.hocel.chirrup.models.conversation.Conversation
 import com.hocel.chirrup.ui.theme.*
+import com.hocel.chirrup.utils.*
 import com.hocel.chirrup.utils.Constants.MESSAGES_REWARD
-import com.hocel.chirrup.utils.LoadingState
-import com.hocel.chirrup.utils.MessageLimitHandlerAction
-import com.hocel.chirrup.utils.showRewardedAd
 import com.hocel.chirrup.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
 
 //TODO: review the processing dialog
@@ -60,11 +54,13 @@ fun ChatScreen(
     val scrollState = rememberLazyListState()
 
     val generatingResponseState by mainViewModel.generatingResponseState.collectAsState()
-    val saveModalBottomSheetState =
+    val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
 
     var userNavigationUp by remember { mutableStateOf(false) }
     val saveOrDeleteState by mainViewModel.saveOrDeleteState.collectAsState()
+
+    val sheetStateContent by mainViewModel.sheetStateContent.collectAsState()
 
     val user by mainViewModel.userInfo.collectAsState()
 
@@ -72,6 +68,7 @@ fun ChatScreen(
 
     var openLoadingDialog by remember { mutableStateOf(false) }
     var openWatchAdDialog by remember { mutableStateOf(false) }
+    var chatModified by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = messages.size) {
         scope.launch {
@@ -84,46 +81,67 @@ fun ChatScreen(
     }
 
     BackHandler {
+        mainViewModel.setChatSheetStateContent(ChatSheetStateContent.Save)
         userNavigationUp = true
-        if (messages.isNotEmpty()) {
+        if (chatModified) {
             scope.launch {
-                saveModalBottomSheetState.show()
+                modalBottomSheetState.show()
             }
+        } else {
+            mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
+            navController.navigateUp()
         }
     }
 
     ModalBottomSheetLayout(
         scrimColor = Color.Black.copy(alpha = 0.6f),
-        sheetState = saveModalBottomSheetState,
+        sheetState = modalBottomSheetState,
         sheetElevation = 8.dp,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetBackgroundColor = MaterialTheme.colors.BottomSheetBackground,
         sheetContent = {
-            SaveConversationSheetContent(
-                onSaveYes = {
-                    mainViewModel.conversationHandler(
-                        context = context,
-                        scope = scope,
-                        action = mainViewModel.action,
-                        conversation = Conversation(
-                            listOfUserMessages = mainViewModel.messagesOfUser,
-                            listOfMessagesConversation = mainViewModel.messagesResponse
-                        ),
-                        onAddSuccess = {
-                            scope.launch {
-                                saveModalBottomSheetState.hide()
+            when (sheetStateContent) {
+                ChatSheetStateContent.Save -> {
+                    SaveConversationSheetContent(
+                        onSaveYes = {
+                            mainViewModel.conversationHandler(
+                                context = context,
+                                scope = scope,
+                                action = mainViewModel.action,
+                                conversation = Conversation(
+                                    listOfUserMessages = mainViewModel.messagesOfUser,
+                                    listOfMessagesConversation = mainViewModel.messagesResponse
+                                ),
+                                onAddSuccess = {
+                                    scope.launch {
+                                        modalBottomSheetState.hide()
+                                        mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
+                                        navController.navigateUp()
+                                    }
+                                },
+                                onRemoveSuccess = {}
+                            )
+                        }
+                    ) {
+                        scope.launch {
+                            modalBottomSheetState.hide()
+                            if (userNavigationUp) {
+                                mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
                                 navController.navigateUp()
                             }
-                        },
-                        onRemoveSuccess = {}
-                    )
-                }
-            ) {
-                scope.launch {
-                    saveModalBottomSheetState.hide()
-                    if (userNavigationUp) {
-                        navController.navigateUp()
+                        }
                     }
+                }
+                ChatSheetStateContent.Settings -> {
+                    SettingsSheetContent(
+                        mainViewModel = mainViewModel,
+                        onSaveClicked = {
+                            mainViewModel.saveChatGptData()
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -133,26 +151,22 @@ fun ChatScreen(
                 TopAppBar(
                     title = { Text("Chat", color = MaterialTheme.colors.TextColor) },
                     actions = {
-                        IconButton(onClick = {
-                            userNavigationUp = false
-                            if (messages.isNotEmpty()) {
-                                scope.launch {
-                                    saveModalBottomSheetState.show()
+                        ChatDropMenu(
+                            onSaveClicked = {
+                                mainViewModel.setChatSheetStateContent(ChatSheetStateContent.Save)
+                                userNavigationUp = false
+                                if (messages.isNotEmpty()) {
+                                    scope.launch {
+                                        modalBottomSheetState.show()
+                                    }
                                 }
-                            }
-                        }) {
-                            Row() {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "Save conversation",
-                                    tint = MaterialTheme.colors.TextColor
-                                )
-                                Text(
-                                    text = "Save conversation",
-                                    color = MaterialTheme.colors.TextColor
-                                )
-                            }
-                        }
+                            },
+                            onSettingsClicked = {
+                                mainViewModel.setChatSheetStateContent(ChatSheetStateContent.Settings)
+                                scope.launch {
+                                    modalBottomSheetState.show()
+                                }
+                            })
                     },
                     backgroundColor = MaterialTheme.colors.BackgroundColor,
                     contentColor = MaterialTheme.colors.TextColor,
@@ -165,14 +179,14 @@ fun ChatScreen(
                                 .size(24.dp, 24.dp)
                                 .clickable {
                                     userNavigationUp = true
-                                    if (messages.isNotEmpty()) {
+                                    if (chatModified) {
                                         scope.launch {
-                                            saveModalBottomSheetState.show()
+                                            modalBottomSheetState.show()
                                         }
                                     } else {
+                                        mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
                                         navController.navigateUp()
                                     }
-
                                 },
                             tint = MaterialTheme.colors.TextColor
                         )
@@ -223,7 +237,7 @@ fun ChatScreen(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "You have $messagesLimit messages left",
+                            text = "You have $messagesLimit message(s) left",
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
@@ -235,7 +249,7 @@ fun ChatScreen(
                                 textDecoration = TextDecoration.Underline,
                                 color = Color.White,
                                 modifier = Modifier.clickable {
-                                   openWatchAdDialog = true
+                                    openWatchAdDialog = true
                                 }
                             )
                         }
@@ -265,20 +279,17 @@ fun ChatScreen(
                             state = scrollState
                         ) {
                             items(messages) { message ->
-                                val sdf = remember {
-                                    SimpleDateFormat("hh:mm", Locale.ROOT)
-                                }
                                 when (message.messageFromBot) {
                                     true -> {
                                         ReceivedMessageRow(
                                             text = message.message,
-                                            messageTime = sdf.format(message.date)
+                                            messageTime = convertTimeStampToDateAndTime(message.date)
                                         )
                                     }
                                     false -> {
                                         SentMessageRow(
                                             text = message.message,
-                                            messageTime = sdf.format(message.date)
+                                            messageTime = convertTimeStampToDateAndTime(message.date)
                                         )
                                     }
                                 }
@@ -296,7 +307,7 @@ fun ChatScreen(
                             )
                         }
                     }
-                    LoadingState.ERROR ->{
+                    LoadingState.ERROR -> {
                         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Something went wrong, try again.",
@@ -309,9 +320,10 @@ fun ChatScreen(
                 }
 
                 ChatInput(
-                    generatingResponseState = generatingResponseState,
+                    responseState = generatingResponseState != LoadingState.LOADING,
                     canSendMessage = messagesLimit > 0 || !user.hasMessagesLimit,
                     onMessageSend = { messageContent ->
+                        chatModified = true
                         mainViewModel.addMessage(
                             ChatMessage(
                                 message = messageContent,

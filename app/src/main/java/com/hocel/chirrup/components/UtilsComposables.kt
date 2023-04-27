@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -277,6 +279,7 @@ fun SaveConversationSheetContent(
         }
     }
 }
+
 @Composable
 fun WatchAdDialog(
     title: String,
@@ -341,5 +344,59 @@ fun DisplayLoadingDialog(
             buttons = {},
             onDismissRequest = {}
         )
+    }
+}
+
+@Composable
+fun ChatDropMenu(onSaveClicked: () -> Unit, onSettingsClicked: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    IconButton(onClick = { expanded = true }) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = "Menu",
+            tint = MaterialTheme.colors.TextColor
+        )
+        DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colors.CardColor),
+            expanded = expanded,
+            onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onSaveClicked()
+            }) {
+                Row(Modifier.fillMaxWidth()) {
+                    Icon(
+                        imageVector = Icons.Default.Done,
+                        contentDescription = "Done",
+                        tint = MaterialTheme.colors.TextColor
+                    )
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Text(
+                        text = "Save",
+                        modifier = Modifier.padding(start = 5.dp),
+                        color = MaterialTheme.colors.TextColor
+                    )
+                }
+            }
+
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onSettingsClicked()
+            }) {
+                Row(Modifier.fillMaxWidth()) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colors.TextColor
+                    )
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Text(
+                        text = "Settings",
+                        modifier = Modifier.padding(start = 5.dp),
+                        color = MaterialTheme.colors.TextColor
+                    )
+                }
+            }
+        }
     }
 }

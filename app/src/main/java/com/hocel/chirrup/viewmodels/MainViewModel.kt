@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.hocel.chirrup.data.repository.CompletionRepository
+import com.hocel.chirrup.data.repository.DataStoreRepository
 import com.hocel.chirrup.models.ChatMessage
 import com.hocel.chirrup.models.chatRequestBody.ChatRequestBody
 import com.hocel.chirrup.models.chatRequestBody.Message
@@ -39,9 +40,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val completionRepository: CompletionRepository,
-    private val appInterceptor: AppInterceptor
+    private val appInterceptor: AppInterceptor,
+    private val dataStoreRepository: DataStoreRepository,
 ) : ViewModel() {
 
+    private val readChatGptData = dataStoreRepository.readChatGptData
     private var _userInfo: MutableStateFlow<User> = MutableStateFlow(User())
     var userInfo = _userInfo.asStateFlow()
 
@@ -72,8 +75,36 @@ class MainViewModel @Inject constructor(
     var action: ConversationHandlerAction by mutableStateOf(ConversationHandlerAction.ADD)
         private set
 
-    var previousConversation: Conversation by mutableStateOf(Conversation())
+    private var previousConversation: Conversation by mutableStateOf(Conversation())
+
+    var sheetStateContent: MutableStateFlow<ChatSheetStateContent> =
+        MutableStateFlow(ChatSheetStateContent.Save)
         private set
+
+    var model = ChatModels.GPT35Turbo.model
+        private set
+
+    var temperature = TemperatureData.BALANCED
+        private set
+
+    init {
+        viewModelScope.launch {
+            readChatGptData.collect { chatData ->
+                model = chatData.model
+                temperature =
+                    TemperatureData.values().first { chatData.temperature == it.tempValue }
+            }
+        }
+    }
+
+    fun saveChatGptData() {
+        viewModelScope.launch {
+            dataStoreRepository.saveChatGptData(
+                model = model,
+                temperature = temperature.tempValue
+            )
+        }
+    }
 
     // Getting openaiAPIKey from Firebase
     fun gettingOpenaiAPIKey(
@@ -91,8 +122,7 @@ class MainViewModel @Inject constructor(
                             return@addSnapshotListener
                         }
                         if (value != null && value.exists()) {
-                            openaiAPIKey =
-                                value.getString(Constants.API_KEY)!!
+                            openaiAPIKey = value.getString(Constants.API_KEY)!!
                             appInterceptor.setOpenaiAPIKey(openaiAPIKey)
                         } else {
                             "An error occurred".toast(context, Toast.LENGTH_SHORT)
@@ -125,8 +155,7 @@ class MainViewModel @Inject constructor(
                                 return@addSnapshotListener
                             }
                             if (value != null && value.exists()) {
-                                _userInfo.value =
-                                    value.toObject(User::class.java) ?: User()
+                                _userInfo.value = value.toObject(User::class.java) ?: User()
                             } else {
                                 "An error occurred".toast(context, Toast.LENGTH_SHORT)
                             }
@@ -163,8 +192,7 @@ class MainViewModel @Inject constructor(
                     when (action) {
                         ConversationHandlerAction.ADD -> {
                             data?.update(
-                                LIST_OF_CONVERSATIONS,
-                                FieldValue.arrayUnion(conversation)
+                                LIST_OF_CONVERSATIONS, FieldValue.arrayUnion(conversation)
                             )?.addOnSuccessListener {
                                 onAddSuccess()
                                 scope.launch {
@@ -179,8 +207,7 @@ class MainViewModel @Inject constructor(
                         }
                         ConversationHandlerAction.REMOVE -> {
                             data?.update(
-                                LIST_OF_CONVERSATIONS,
-                                FieldValue.arrayRemove(conversation)
+                                LIST_OF_CONVERSATIONS, FieldValue.arrayRemove(conversation)
                             )?.addOnSuccessListener {
                                 onRemoveSuccess()
                                 scope.launch {
@@ -195,12 +222,10 @@ class MainViewModel @Inject constructor(
                         }
                         ConversationHandlerAction.UPDATE -> {
                             data?.update(
-                                LIST_OF_CONVERSATIONS,
-                                FieldValue.arrayRemove(previousConversation)
+                                LIST_OF_CONVERSATIONS, FieldValue.arrayRemove(previousConversation)
                             )?.addOnSuccessListener {
                                 data.update(
-                                    LIST_OF_CONVERSATIONS,
-                                    FieldValue.arrayUnion(conversation)
+                                    LIST_OF_CONVERSATIONS, FieldValue.arrayUnion(conversation)
                                 )
                             }?.addOnFailureListener {
                                 Log.d("Error", it.toString())
@@ -222,9 +247,6 @@ class MainViewModel @Inject constructor(
         this.action = action
     }
 
-    //TODO: Add options to switch models
-    private val model = "gpt-3.5-turbo"
-
     fun generateResponse(message: String) {
         viewModelScope.launch {
             try {
@@ -233,7 +255,8 @@ class MainViewModel @Inject constructor(
                 val response = completionRepository.getChatResponse(
                     ChatRequestBody(
                         model = model,
-                        messages = messagesOfUser
+                        messages = messagesOfUser,
+                        temperature = temperature.tempValue
                     )
                 )
                 if (response.isSuccessful) {
@@ -292,9 +315,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun messagesLimitHandler(
-        currentMessagesLimit: Int,
-        action: MessageLimitHandlerAction,
-        amount: Int
+        currentMessagesLimit: Int, action: MessageLimitHandlerAction, amount: Int
     ) {
         viewModelScope.launch {
             val db = Firebase.firestore
@@ -304,14 +325,12 @@ class MainViewModel @Inject constructor(
                 when (action) {
                     MessageLimitHandlerAction.ADD -> {
                         data?.update(
-                            MESSAGES_LIMIT,
-                            currentMessagesLimit + amount
+                            MESSAGES_LIMIT, currentMessagesLimit + amount
                         )
                     }
                     MessageLimitHandlerAction.SUBSTRACT -> {
                         data?.update(
-                            MESSAGES_LIMIT,
-                            currentMessagesLimit - amount
+                            MESSAGES_LIMIT, currentMessagesLimit - amount
                         )
                     }
                 }
@@ -326,9 +345,20 @@ class MainViewModel @Inject constructor(
         messagesOfUser = listOf()
     }
 
+    fun setChatModel(selectedModel: String) {
+        model = selectedModel
+    }
+
+    fun setChatTemperature(selectedTemperature: TemperatureData) {
+        temperature = selectedTemperature
+    }
+
+    fun setChatSheetStateContent(sheetStateContent: ChatSheetStateContent) {
+        this.sheetStateContent.value = sheetStateContent
+    }
+
     fun signOut(
-        context: Context,
-        navController: NavController
+        context: Context, navController: NavController
     ) {
         try {
             auth.signOut()

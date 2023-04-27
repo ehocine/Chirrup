@@ -23,5 +23,9 @@ object Constants {
 
     const val MESSAGES_REWARD = 5
 
+    const val DATA_NAME = "chat_gpt_data"
+    const val CHAT_MODEL = "chat_model"
+    const val TEMPERATURE = "temperature"
+
     const val API_KEY = "apikey"
 }
