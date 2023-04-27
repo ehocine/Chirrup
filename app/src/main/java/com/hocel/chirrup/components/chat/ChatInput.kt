@@ -47,7 +47,7 @@ internal fun ChatInput(
             onValueChange = { input = it },
             enabled = responseState,
             textStyle = TextStyle(
-                color = MaterialTheme.colors.TextColor,
+                color = TextColor,
                 fontWeight = FontWeight.W500,
                 fontSize = 16.sp
             ),
@@ -69,7 +69,7 @@ internal fun ChatInput(
                     Icon(
                         imageVector = Icons.Filled.Send,
                         contentDescription = null,
-                        tint = MaterialTheme.colors.ButtonColor
+                        tint = ButtonColor
                     )
                 }
             }

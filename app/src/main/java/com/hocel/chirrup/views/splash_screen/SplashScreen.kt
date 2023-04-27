@@ -2,18 +2,17 @@ package com.hocel.chirrup.views.splash_screen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.hocel.chirrup.navigation.Screens
@@ -23,6 +22,7 @@ import com.hocel.chirrup.utils.LoadingState
 import com.hocel.chirrup.utils.userLoggedIn
 import com.hocel.chirrup.viewmodels.MainViewModel
 import kotlinx.coroutines.delay
+import com.hocel.chirrup.R
 
 @Composable
 fun SplashScreen(
@@ -59,7 +59,7 @@ fun SplashContent(alpha: Float) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.BackgroundColor),
+            .background(BackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -67,13 +67,16 @@ fun SplashContent(alpha: Float) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.qloga_logo),
-//                modifier = Modifier.alpha(alpha),
-//                contentDescription = ""
-//            )
+            Image(
+                painter = painterResource(id = R.drawable.chatbot),
+                modifier = Modifier
+                    .alpha(alpha)
+                    .size(100.dp),
+                contentDescription = ""
+            )
+            Spacer(modifier = Modifier.height(20.dp))
             CircularProgressIndicator(
-                color = MaterialTheme.colors.TextColor,
+                color = TextColor,
                 modifier = Modifier.alpha(alpha)
             )
         }

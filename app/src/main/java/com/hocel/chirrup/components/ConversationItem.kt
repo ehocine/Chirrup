@@ -4,7 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Schedule
@@ -27,9 +30,9 @@ import me.saket.swipe.SwipeableActionsBox
 @Composable
 fun ConversationItem(
     conversation: Conversation,
-    onItemClicked: (conversation: Conversation) -> Unit,
+    onItemClicked: (Conversation) -> Unit,
     enableDeleteAction: Boolean = false,
-    onDeleteConversation: (conversation: Conversation) -> Unit
+    onDeleteConversation: (Conversation) -> Unit
 ) {
     val delete = SwipeAction(
         onSwipe = {
@@ -60,7 +63,7 @@ fun ConversationItem(
                     onItemClicked(conversation)
                 }),
             elevation = 0.dp,
-            backgroundColor = MaterialTheme.colors.CardColor
+            backgroundColor = CardColor
         ) {
             Row(
                 modifier = Modifier
@@ -74,10 +77,17 @@ fun ConversationItem(
                         .align(Alignment.CenterVertically)
                         .weight(0.6f)
                 ) {
-
                     Text(
-                        text = conversation.listOfUserMessages[0].content,
-                        color = MaterialTheme.colors.TextColor,
+                        text = "You: ${conversation.listOfMessagesConversation[conversation.listOfMessagesConversation.lastIndex - 1].message}",
+                        color = TextColor,
+                        style = MaterialTheme.typography.subtitle2,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "AI: ${conversation.listOfMessagesConversation[conversation.listOfMessagesConversation.lastIndex].message}",
+                        color = TextColor,
                         style = MaterialTheme.typography.subtitle2,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -86,8 +96,8 @@ fun ConversationItem(
                     Spacer(modifier = Modifier.height(8.dp))
                     Column {
                         Text(
-                            text = "CV created on",
-                            color = MaterialTheme.colors.TextColor,
+                            text = "Chat last modified on",
+                            color = TextColor,
                             style = MaterialTheme.typography.subtitle2,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

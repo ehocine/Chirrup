@@ -1,7 +1,6 @@
 package com.hocel.chirrup.views.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -54,20 +53,7 @@ fun HomeScreen(
     val saveOrDeleteState by mainViewModel.saveOrDeleteState.collectAsState()
     val settingPreviousConversationState by mainViewModel.settingPreviousConversationState.collectAsState()
 
-    var openLoadingDialog by remember { mutableStateOf(false) }
     var openWatchAdDialog by remember { mutableStateOf(false) }
-
-    openLoadingDialog = when (settingPreviousConversationState) {
-        LoadingState.LOADING -> true
-        else -> false
-    }
-
-    var openDeleteLoadingDialog by remember { mutableStateOf(false) }
-
-    openDeleteLoadingDialog = when (saveOrDeleteState) {
-        LoadingState.LOADING -> true
-        else -> false
-    }
 
     val messagesLimit = user.messagesLimit
 
@@ -75,7 +61,7 @@ fun HomeScreen(
         sheetState = deleteModalBottomSheetState,
         sheetElevation = 8.dp,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetBackgroundColor = MaterialTheme.colors.BottomSheetBackground,
+        sheetBackgroundColor = BottomSheetBackground,
         sheetContent = {
             DeleteConversationSheetContent(
                 onDeleteYes = {
@@ -109,7 +95,7 @@ fun HomeScreen(
                     contentDescription = null
                 )
             },
-                backgroundColor = MaterialTheme.colors.ButtonColor,
+                backgroundColor = ButtonColor,
                 onClick = {
                     mainViewModel.resetMessages()
                     mainViewModel.setConversationAction(ConversationHandlerAction.ADD)
@@ -119,22 +105,25 @@ fun HomeScreen(
         }, bottomBar = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                 // shows a banner ad
-                    AndroidView(
-                        factory = { context ->
-                            AdView(context).apply {
-                                setAdSize(AdSize.BANNER)
-                                adUnitId = context.getString(R.string.ad_id_banner)
-                                loadAd(AdRequest.Builder().build())
-                            }
+                AndroidView(
+                    factory = { context ->
+                        AdView(context).apply {
+                            setAdSize(AdSize.BANNER)
+                            adUnitId = context.getString(R.string.ad_id_banner)
+                            loadAd(AdRequest.Builder().build())
                         }
-                    )
+                    }
+                )
             }
         }) {
-            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colors.BackgroundColor) {
-                DisplayLoadingDialog(title = "Loading your chat...", openDialog = openLoadingDialog)
+            Surface(Modifier.fillMaxSize(), color = BackgroundColor) {
+                DisplayLoadingDialog(
+                    title = "Loading your chat...",
+                    openDialog = settingPreviousConversationState == LoadingState.LOADING
+                )
                 DisplayLoadingDialog(
                     title = "Deleting your chat...",
-                    openDialog = openDeleteLoadingDialog
+                    openDialog = saveOrDeleteState == LoadingState.LOADING
                 )
                 WatchAdDialog(
                     title = "Watch an ad to earn more",
@@ -143,7 +132,7 @@ fun HomeScreen(
                             text = "Watch an ad to earn $MESSAGES_REWARD more messages",
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colors.TextColor,
+                            color = TextColor,
                         )
                     },
                     openDialog = openWatchAdDialog,
@@ -177,12 +166,12 @@ fun HomeScreen(
                                 Modifier
                                     .fillMaxWidth()
                                     .height(50.dp)
-                                    .background(if (messagesLimit <= 0) RedColor else MaterialTheme.colors.ButtonColor),
+                                    .background(if (messagesLimit <= 0) RedColor else ButtonColor),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = "You have $messagesLimit messages left",
+                                        text = "You have $messagesLimit message(s) left",
                                         style = MaterialTheme.typography.subtitle1,
                                         fontWeight = FontWeight.Normal,
                                         color = Color.White,
@@ -199,7 +188,6 @@ fun HomeScreen(
                                         )
                                     }
                                 }
-
                             }
                             if (user.conversations.isEmpty()) {
                                 NoResults()
@@ -208,7 +196,7 @@ fun HomeScreen(
                                     text = "Here are your chats",
                                     textAlign = TextAlign.Start,
                                     style = MaterialTheme.typography.subtitle1,
-                                    color = MaterialTheme.colors.TextColor,
+                                    color = TextColor,
                                     modifier = Modifier.padding(16.dp)
                                 )
                                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
@@ -219,7 +207,7 @@ fun HomeScreen(
                                                 mainViewModel.setConversationAction(
                                                     ConversationHandlerAction.UPDATE
                                                 )
-                                                mainViewModel.settingPreviousChat(conversation)
+                                                mainViewModel.settingSelectedChat(it)
                                                 navController.navigate(Screens.ChatScreen.route)
                                             },
                                             enableDeleteAction = true,

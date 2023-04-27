@@ -1,6 +1,5 @@
 package com.hocel.chirrup.views.login
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -36,7 +35,6 @@ import com.hocel.chirrup.utils.Constants.loadingState
 import com.hocel.chirrup.utils.LoadingState
 import com.hocel.chirrup.utils.resendVerificationEmail
 import com.hocel.chirrup.utils.signInUser
-
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -57,7 +55,7 @@ fun LoginPage(
 
     Surface(
         modifier = Modifier.clickable { focusManager.clearFocus() },
-        color = MaterialTheme.colors.BackgroundColor
+        color = BackgroundColor
     ) {
         Box(
             modifier = Modifier
@@ -95,18 +93,18 @@ fun LoginPage(
                             label = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = MaterialTheme.colors.ButtonColor)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = ButtonColor)
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         OutlinedTextField(
@@ -119,7 +117,7 @@ fun LoginPage(
                                     Icon(
                                         if (passwordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                         contentDescription = stringResource(R.string.password_eye),
-                                        tint = MaterialTheme.colors.ButtonColor
+                                        tint = ButtonColor
                                     )
                                 }
                             },
@@ -128,13 +126,13 @@ fun LoginPage(
                             label = {
                                 Text(
                                     text = stringResource(R.string.password),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.password),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
@@ -142,7 +140,7 @@ fun LoginPage(
                                 .fillMaxWidth(0.8f)
                                 .focusRequester(focusRequester = focusRequester),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.ButtonColor
+                                focusedBorderColor = ButtonColor
                             )
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
@@ -173,7 +171,7 @@ fun LoginPage(
                                 .fillMaxWidth(0.8f)
                                 .height(50.dp),
                             colors = ButtonDefaults.textButtonColors(
-                                backgroundColor = MaterialTheme.colors.ButtonColor,
+                                backgroundColor = ButtonColor,
                                 contentColor = Color.White
                             )
                         ) {

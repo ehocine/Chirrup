@@ -36,7 +36,7 @@ fun TopBar(
                 text = "Hey ${user.name}",
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.TextColor
+                color = TextColor
             )
         }
         Row(

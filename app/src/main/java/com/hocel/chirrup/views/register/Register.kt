@@ -1,6 +1,5 @@
 package com.hocel.chirrup.views.register
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -34,7 +33,6 @@ import com.hocel.chirrup.utils.LoadingState
 import com.hocel.chirrup.utils.registerNewUser
 import kotlinx.coroutines.flow.MutableStateFlow
 
-
 @Composable
 fun RegisterPage(
     navController: NavController
@@ -54,7 +52,7 @@ fun RegisterPage(
 
     Surface(
         modifier = Modifier.clickable { focusManager.clearFocus() },
-        color = MaterialTheme.colors.BackgroundColor
+        color = BackgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
@@ -91,18 +89,18 @@ fun RegisterPage(
                             label = {
                                 Text(
                                     text = stringResource(R.string.name),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.name),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = MaterialTheme.colors.ButtonColor)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = ButtonColor)
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         OutlinedTextField(
@@ -111,18 +109,18 @@ fun RegisterPage(
                             label = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = MaterialTheme.colors.ButtonColor)
+                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = ButtonColor)
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         OutlinedTextField(
@@ -131,18 +129,18 @@ fun RegisterPage(
                             label = {
                                 Text(
                                     text = stringResource(R.string.password),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.password),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = MaterialTheme.colors.ButtonColor),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = ButtonColor),
                             trailingIcon = {
                                 IconButton(onClick = {
                                     passwordVisibility = !passwordVisibility
@@ -150,7 +148,7 @@ fun RegisterPage(
                                     Icon(
                                         if (passwordVisibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                         contentDescription = "Password Eye",
-                                        tint = MaterialTheme.colors.ButtonColor
+                                        tint = ButtonColor
                                     )
                                 }
                             },
@@ -173,7 +171,7 @@ fun RegisterPage(
                                 .fillMaxWidth(0.8f)
                                 .height(50.dp),
                             colors = ButtonDefaults.textButtonColors(
-                                backgroundColor = MaterialTheme.colors.ButtonColor,
+                                backgroundColor = ButtonColor,
                                 contentColor = Color.White
                             )
                         ) {

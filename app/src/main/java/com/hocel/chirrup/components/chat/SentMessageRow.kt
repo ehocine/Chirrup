@@ -45,14 +45,14 @@ fun SentMessageRow(
             text = messageTime,
             style = MaterialTheme.typography.caption,
             fontSize = 13.sp,
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
         )
 
         // This is chat bubble
         ChatBubbleConstraints(
             modifier = Modifier
                 .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp))
-                .background(MaterialTheme.colors.SentBubbleColor)
+                .background(SentBubbleColor)
                 .clickable { },
             content = {
                 TextMessageInsideBubble(

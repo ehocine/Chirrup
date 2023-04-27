@@ -16,7 +16,7 @@ fun Title(title: String, modifier: Modifier = Modifier) {
         text = title,
         modifier = modifier
             .padding(16.dp, 0.dp, 0.dp, 0.dp),
-        color = MaterialTheme.colors.TextColor,
+        color = TextColor,
         style = MaterialTheme.typography.subtitle1,
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.Start

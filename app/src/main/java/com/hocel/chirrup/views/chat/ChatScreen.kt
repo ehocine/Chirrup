@@ -1,6 +1,7 @@
 package com.hocel.chirrup.views.chat
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +40,6 @@ import com.hocel.chirrup.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 import java.util.*
 
-//TODO: review the processing dialog
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -66,18 +66,15 @@ fun ChatScreen(
 
     val messagesLimit = user.messagesLimit
 
-    var openLoadingDialog by remember { mutableStateOf(false) }
     var openWatchAdDialog by remember { mutableStateOf(false) }
     var chatModified by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = messages.size) {
-        scope.launch {
-            scrollState.animateScrollToItem(messages.lastIndex)
+        if (messages.isNotEmpty()) {
+            scope.launch {
+                scrollState.animateScrollToItem(messages.lastIndex)
+            }
         }
-    }
-    openLoadingDialog = when (saveOrDeleteState) {
-        LoadingState.LOADING -> true
-        else -> false
     }
 
     BackHandler {
@@ -98,29 +95,36 @@ fun ChatScreen(
         sheetState = modalBottomSheetState,
         sheetElevation = 8.dp,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetBackgroundColor = MaterialTheme.colors.BottomSheetBackground,
+        sheetBackgroundColor = BottomSheetBackground,
         sheetContent = {
             when (sheetStateContent) {
                 ChatSheetStateContent.Save -> {
                     SaveConversationSheetContent(
                         onSaveYes = {
-                            mainViewModel.conversationHandler(
-                                context = context,
-                                scope = scope,
-                                action = mainViewModel.action,
-                                conversation = Conversation(
-                                    listOfUserMessages = mainViewModel.messagesOfUser,
-                                    listOfMessagesConversation = mainViewModel.messagesResponse
-                                ),
-                                onAddSuccess = {
-                                    scope.launch {
-                                        modalBottomSheetState.hide()
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }
+                            if (generatingResponseState == LoadingState.LOADED) {
+                                mainViewModel.conversationHandler(
+                                    context = context,
+                                    scope = scope,
+                                    action = mainViewModel.action,
+                                    conversation = Conversation(
+                                        listOfUserMessages = mainViewModel.messagesOfUser,
+                                        listOfMessagesConversation = mainViewModel.messagesResponse
+                                    ),
+                                    onAddSuccess = {
                                         mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
                                         navController.navigateUp()
-                                    }
-                                },
-                                onRemoveSuccess = {}
-                            )
+                                    },
+                                    onRemoveSuccess = {}
+                                )
+                            } else {
+                                "Please wait for the chat complete".toast(
+                                    context,
+                                    Toast.LENGTH_SHORT
+                                )
+                            }
                         }
                     ) {
                         scope.launch {
@@ -149,16 +153,22 @@ fun ChatScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Chat", color = MaterialTheme.colors.TextColor) },
+                    title = { Text("Chat", color = TextColor) },
                     actions = {
                         ChatDropMenu(
                             onSaveClicked = {
                                 mainViewModel.setChatSheetStateContent(ChatSheetStateContent.Save)
                                 userNavigationUp = false
                                 if (messages.isNotEmpty()) {
-                                    scope.launch {
-                                        modalBottomSheetState.show()
+                                    if (chatModified) {
+                                        scope.launch {
+                                            modalBottomSheetState.show()
+                                        }
+                                    } else {
+                                        "Chat is already saved".toast(context, Toast.LENGTH_SHORT)
                                     }
+                                } else {
+                                    "Chat is empty".toast(context, Toast.LENGTH_SHORT)
                                 }
                             },
                             onSettingsClicked = {
@@ -168,8 +178,8 @@ fun ChatScreen(
                                 }
                             })
                     },
-                    backgroundColor = MaterialTheme.colors.BackgroundColor,
-                    contentColor = MaterialTheme.colors.TextColor,
+                    backgroundColor = BackgroundColor,
+                    contentColor = TextColor,
                     elevation = 0.dp,
                     navigationIcon = {
                         Icon(
@@ -188,13 +198,16 @@ fun ChatScreen(
                                         navController.navigateUp()
                                     }
                                 },
-                            tint = MaterialTheme.colors.TextColor
+                            tint = TextColor
                         )
                     }
                 )
             }
         ) {
-            DisplayLoadingDialog(title = "Processing...", openDialog = openLoadingDialog)
+            DisplayLoadingDialog(
+                title = "Processing...",
+                openDialog = saveOrDeleteState == LoadingState.LOADING
+            )
             WatchAdDialog(
                 title = "Watch an ad to earn more",
                 message = {
@@ -202,7 +215,7 @@ fun ChatScreen(
                         text = "Watch an ad to earn $MESSAGES_REWARD more messages",
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colors.TextColor,
+                        color = TextColor,
                     )
                 },
                 openDialog = openWatchAdDialog,
@@ -219,7 +232,7 @@ fun ChatScreen(
             )
             Column(
                 modifier = Modifier
-                    .background(MaterialTheme.colors.BackgroundColor)
+                    .background(BackgroundColor)
                     .fillMaxSize()
                     .focusable()
                     .wrapContentHeight()
@@ -232,7 +245,7 @@ fun ChatScreen(
                     Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                        .background(if (messagesLimit <= 0) RedColor else MaterialTheme.colors.ButtonColor),
+                        .background(if (messagesLimit <= 0) RedColor else ButtonColor),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -265,7 +278,7 @@ fun ChatScreen(
                         ) {
                             Text(
                                 text = "Start by asking a question",
-                                color = MaterialTheme.colors.TextColor,
+                                color = TextColor,
                                 fontWeight = FontWeight.Medium,
                                 style = MaterialTheme.typography.body2,
                             )
@@ -303,7 +316,7 @@ fun ChatScreen(
                             Text(
                                 text = "Generating answer...",
                                 style = MaterialTheme.typography.subtitle2,
-                                color = MaterialTheme.colors.TextColor
+                                color = TextColor
                             )
                         }
                     }
@@ -312,13 +325,12 @@ fun ChatScreen(
                             Text(
                                 text = "Something went wrong, try again.",
                                 style = MaterialTheme.typography.subtitle2,
-                                color = MaterialTheme.colors.TextColor
+                                color = TextColor
                             )
                         }
                     }
                     else -> Unit
                 }
-
                 ChatInput(
                     responseState = generatingResponseState != LoadingState.LOADING,
                     canSendMessage = messagesLimit > 0 || !user.hasMessagesLimit,

@@ -226,8 +226,22 @@ class MainViewModel @Inject constructor(
                             )?.addOnSuccessListener {
                                 data.update(
                                     LIST_OF_CONVERSATIONS, FieldValue.arrayUnion(conversation)
-                                )
+                                ).addOnSuccessListener {
+                                    scope.launch {
+                                        _saveOrDeleteState.emit(LoadingState.LOADED)
+                                    }
+                                    onAddSuccess()
+                                }.addOnFailureListener {
+                                    "Something went wrong: $it".toast(context, Toast.LENGTH_SHORT)
+                                    scope.launch {
+                                        _saveOrDeleteState.emit(LoadingState.ERROR)
+                                    }
+                                }
                             }?.addOnFailureListener {
+                                scope.launch {
+                                    _saveOrDeleteState.emit(LoadingState.ERROR)
+                                }
+                                "Something went wrong: $it".toast(context, Toast.LENGTH_SHORT)
                                 Log.d("Error", it.toString())
                             }
                         }
@@ -297,7 +311,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun settingPreviousChat(conversation: Conversation) {
+    fun settingSelectedChat(conversation: Conversation) {
         viewModelScope.launch {
             _settingPreviousConversationState.emit(LoadingState.LOADING)
 

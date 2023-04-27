@@ -31,11 +31,11 @@ fun LoadingList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.BackgroundColor),
+            .background(BackgroundColor),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CircularProgressIndicator(color = MaterialTheme.colors.TextColor)
+        CircularProgressIndicator(color = TextColor)
     }
 }
 
@@ -45,7 +45,7 @@ fun ErrorLoadingResults() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.BackgroundColor),
+            .background(BackgroundColor),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -54,7 +54,7 @@ fun ErrorLoadingResults() {
             text = "Error loading data",
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 0.dp),
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.W600,
             textAlign = TextAlign.Start
@@ -67,7 +67,7 @@ fun NoResults() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.BackgroundColor),
+            .background(BackgroundColor),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -76,7 +76,7 @@ fun NoResults() {
             text = "No entries",
             modifier = Modifier
                 .padding(0.dp, 0.dp, 0.dp, 0.dp),
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.W600,
             textAlign = TextAlign.Start
@@ -91,10 +91,10 @@ fun SignOutDropMenu(onSignOutClicked: () -> Unit) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = "Menu",
-            tint = MaterialTheme.colors.TextColor
+            tint = TextColor
         )
         DropdownMenu(
-            modifier = Modifier.background(MaterialTheme.colors.CardColor),
+            modifier = Modifier.background(CardColor),
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(onClick = {
@@ -105,13 +105,13 @@ fun SignOutDropMenu(onSignOutClicked: () -> Unit) {
                     Icon(
                         imageVector = Icons.Default.Logout,
                         contentDescription = "Sign out",
-                        tint = MaterialTheme.colors.TextColor
+                        tint = TextColor
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
                     Text(
                         text = "Sign out",
                         modifier = Modifier.padding(start = 5.dp),
-                        color = MaterialTheme.colors.TextColor
+                        color = TextColor
                     )
                 }
             }
@@ -174,14 +174,14 @@ fun DeleteConversationSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.BackgroundColor)
+            .background(BackgroundColor)
     ) {
         Text(
             text = "Are you sure you want to delete?",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 24.dp),
-            color = MaterialTheme.colors.TextColor
+            color = TextColor
         )
         TransparentButton(
             shape = RoundedCornerShape(0),
@@ -195,7 +195,7 @@ fun DeleteConversationSheetContent(
                 text = "Yes",
                 modifier = Modifier
                     .padding(vertical = 16.dp),
-                color = MaterialTheme.colors.TextColor
+                color = TextColor
             )
         }
         Divider(
@@ -217,7 +217,7 @@ fun DeleteConversationSheetContent(
                 text = "Cancel",
                 modifier = Modifier
                     .padding(vertical = 16.dp),
-                color = MaterialTheme.colors.TextColor
+                color = TextColor
             )
         }
     }
@@ -231,14 +231,14 @@ fun SaveConversationSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.BackgroundColor)
+            .background(BackgroundColor)
     ) {
         Text(
             text = "Do you want to save this conversation?",
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 24.dp),
-            color = MaterialTheme.colors.TextColor
+            color = TextColor
         )
         TransparentButton(
             shape = RoundedCornerShape(0),
@@ -252,7 +252,7 @@ fun SaveConversationSheetContent(
                 text = "Yes",
                 modifier = Modifier
                     .padding(vertical = 16.dp),
-                color = MaterialTheme.colors.TextColor
+                color = TextColor
             )
         }
         Divider(
@@ -274,7 +274,7 @@ fun SaveConversationSheetContent(
                 text = "No",
                 modifier = Modifier
                     .padding(vertical = 16.dp),
-                color = MaterialTheme.colors.TextColor
+                color = TextColor
             )
         }
     }
@@ -301,7 +301,7 @@ fun WatchAdDialog(
 
             confirmButton = {
                 Button(
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colors.ButtonColor),
+                    colors = ButtonDefaults.buttonColors(ButtonColor),
                     onClick = {
                         onYesClicked()
                         closeDialog()
@@ -315,7 +315,7 @@ fun WatchAdDialog(
                 {
                     Text(
                         text = "No",
-                        color = MaterialTheme.colors.DialogNoText
+                        color = DialogNoText
                     )
                 }
             },
@@ -338,7 +338,7 @@ fun DisplayLoadingDialog(
             },
             text = {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colors.TextColor)
+                    CircularProgressIndicator(color = TextColor)
                 }
             },
             buttons = {},
@@ -354,10 +354,10 @@ fun ChatDropMenu(onSaveClicked: () -> Unit, onSettingsClicked: () -> Unit) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = "Menu",
-            tint = MaterialTheme.colors.TextColor
+            tint = TextColor
         )
         DropdownMenu(
-            modifier = Modifier.background(MaterialTheme.colors.CardColor),
+            modifier = Modifier.background(CardColor),
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
             DropdownMenuItem(onClick = {
@@ -368,13 +368,13 @@ fun ChatDropMenu(onSaveClicked: () -> Unit, onSettingsClicked: () -> Unit) {
                     Icon(
                         imageVector = Icons.Default.Done,
                         contentDescription = "Done",
-                        tint = MaterialTheme.colors.TextColor
+                        tint = TextColor
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
                     Text(
                         text = "Save",
                         modifier = Modifier.padding(start = 5.dp),
-                        color = MaterialTheme.colors.TextColor
+                        color = TextColor
                     )
                 }
             }
@@ -387,13 +387,13 @@ fun ChatDropMenu(onSaveClicked: () -> Unit, onSettingsClicked: () -> Unit) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "Settings",
-                        tint = MaterialTheme.colors.TextColor
+                        tint = TextColor
                     )
                     Spacer(modifier = Modifier.padding(5.dp))
                     Text(
                         text = "Settings",
                         modifier = Modifier.padding(start = 5.dp),
-                        color = MaterialTheme.colors.TextColor
+                        color = TextColor
                     )
                 }
             }

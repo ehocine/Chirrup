@@ -1,6 +1,5 @@
 package com.hocel.chirrup.views.forgot_password
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +26,6 @@ import com.hocel.chirrup.utils.LoadingState
 import com.hocel.chirrup.utils.resetUserPassword
 import kotlinx.coroutines.flow.MutableStateFlow
 
-
 @Composable
 fun ForgotPassword(navController: NavController) {
     val context = LocalContext.current
@@ -39,7 +37,7 @@ fun ForgotPassword(navController: NavController) {
 
     Surface(
         modifier = Modifier.clickable { focusManager.clearFocus() },
-        color = MaterialTheme.colors.BackgroundColor
+        color = BackgroundColor
     ) {
         Box(
             modifier = Modifier
@@ -79,19 +77,19 @@ fun ForgotPassword(navController: NavController) {
                             label = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             placeholder = {
                                 Text(
                                     text = stringResource(R.string.email_address),
-                                    color = MaterialTheme.colors.ButtonColor
+                                    color = ButtonColor
                                 )
                             },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(0.8f),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colors.ButtonColor
+                                focusedBorderColor = ButtonColor
                             )
                         )
                         Spacer(modifier = Modifier.padding(10.dp))
@@ -103,7 +101,7 @@ fun ForgotPassword(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth(0.8f)
                                 .height(50.dp),
-                            colors = ButtonDefaults.buttonColors(MaterialTheme.colors.ButtonColor)
+                            colors = ButtonDefaults.buttonColors(ButtonColor)
                         ) {
                             if (state == LoadingState.LOADING) {
                                 CircularProgressIndicator(color = Color.White)

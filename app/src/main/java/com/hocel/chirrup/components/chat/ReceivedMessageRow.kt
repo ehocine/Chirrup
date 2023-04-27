@@ -42,14 +42,14 @@ fun ReceivedMessageRow(
             text = messageTime,
             style = MaterialTheme.typography.caption,
             fontSize = 13.sp,
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
         )
 
         //ChatBubble
         ChatBubbleConstraints(
             modifier = Modifier
                 .clip(RoundedCornerShape(bottomEnd = 16.dp, topEnd = 16.dp, bottomStart = 16.dp))
-                .background(MaterialTheme.colors.ReceivedBubbleColor)
+                .background(ReceivedBubbleColor)
                 .clickable { },
             content = {
                 TextMessageInsideBubble(
@@ -61,7 +61,7 @@ fun ReceivedMessageRow(
                         bottom = 4.dp
                     ),
                     lineHeight = 20.sp,
-                    color = MaterialTheme.colors.ReceivedTextColor,
+                    color = ReceivedTextColor,
                     fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.body1
                 )

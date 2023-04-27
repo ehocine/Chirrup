@@ -1,12 +1,9 @@
 package com.hocel.chirrup.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
 val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 
@@ -29,54 +26,46 @@ val background_content_light = Color(0xFFEEEEEE)
 
 val darkBackground = Color(0xFF121212)
 
-val Colors.SentBubbleColor: Color
+val SentBubbleColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blue else blueNight
 
-val Colors.ReceivedBubbleColor: Color
+val ReceivedBubbleColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) gray else grayNight
 
-val Colors.ReceivedTextColor: Color
+val ReceivedTextColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) grayText else grayTextNight
 
-/*val Colors.BackgroundColor: Color
-    @Composable
-    get() = if (!isSystemInDarkTheme()) Color.White else Color.Black
-    */
-val Colors.BackgroundColor: Color
+val BackgroundColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blueBG else darkBackground
 
-val Colors.TextColor: Color
+val TextColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blueText else Color.White
 
-val Colors.CardColor: Color
+val CardColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) card else Color.Black
 
-val Colors.ButtonColor: Color
+val ButtonColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blue else blueNight
 
-val Colors.CircularProgressColor: Color
+val ButtonTextColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) Color.White else Color.Black
 
-val Colors.ButtonTextColor: Color
-    @Composable
-    get() = if (!isSystemInDarkTheme()) Color.White else Color.Black
-
-val Colors.BottomSheetBackground: Color
+val BottomSheetBackground: Color
     @Composable
     get() = if (isSystemInDarkTheme()) background_content_dark else background_content_light
 
-val Colors.DialogNoText: Color
+val DialogNoText: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) blue else Color.White
 
-val Colors.SwitcherBackground: Color
+val SwitcherBackground: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) Color.White else Color.Black

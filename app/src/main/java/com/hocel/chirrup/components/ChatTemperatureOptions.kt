@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -37,7 +36,7 @@ fun ChatTemperatureOptions(
                     size = 12.dp,
                 )
             )
-            .background(MaterialTheme.colors.SwitcherBackground),
+            .background(SwitcherBackground),
     ) {
         options.forEach { option ->
             Row(
@@ -49,7 +48,7 @@ fun ChatTemperatureOptions(
                 Text(
                     text = option.tempName,
                     style = typography.subtitle2,
-                    color = if (option == selectedOption) Color.White else MaterialTheme.colors.TextColor,
+                    color = if (option == selectedOption) Color.White else TextColor,
                     modifier = Modifier
                         .clip(
                             shape = RoundedCornerShape(

@@ -21,10 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.hocel.chirrup.ui.theme.BackgroundColor
-import com.hocel.chirrup.ui.theme.ButtonColor
-import com.hocel.chirrup.ui.theme.RedColor
-import com.hocel.chirrup.ui.theme.TextColor
+import com.hocel.chirrup.ui.theme.*
 import com.hocel.chirrup.utils.ChatModels
 import com.hocel.chirrup.utils.TemperatureData
 import com.hocel.chirrup.viewmodels.MainViewModel
@@ -34,8 +31,6 @@ fun SettingsSheetContent(
     mainViewModel: MainViewModel,
     onSaveClicked: () -> Unit
 ) {
-//    val temperature by remember { mutableStateOf(mainViewModel.temperature) }
-
     var textAlertExpanded by remember {
         mutableStateOf(
             mainViewModel.temperature == TemperatureData.CREATIVE
@@ -44,7 +39,7 @@ fun SettingsSheetContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.BackgroundColor)
+            .background(BackgroundColor)
     ) {
         Spacer(modifier = Modifier.height(24.dp))
         Column(
@@ -58,7 +53,7 @@ fun SettingsSheetContent(
             text = "Select a model",
             modifier = Modifier
                 .padding(16.dp, 0.dp, 0.dp, 0.dp),
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Start
@@ -75,7 +70,7 @@ fun SettingsSheetContent(
             text = "Set the conversation style",
             modifier = Modifier
                 .padding(16.dp, 0.dp, 0.dp, 0.dp),
-            color = MaterialTheme.colors.TextColor,
+            color = TextColor,
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Start
@@ -97,7 +92,7 @@ fun SettingsSheetContent(
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = textAlertExpanded) {
             Text(
-                text = "Creative may cause requests to take more time.",
+                text = "Creative may cause requests to take more time & the AI is more likely to generate longer and imaginative responses.",
                 modifier = Modifier
                     .padding(16.dp, 0.dp, 0.dp, 0.dp),
                 color = RedColor,
@@ -106,14 +101,14 @@ fun SettingsSheetContent(
                 textAlign = TextAlign.Start
             )
         }
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp, 16.dp, 16.dp)
                 .height(52.dp),
             colors = ButtonDefaults.textButtonColors(
-                backgroundColor = MaterialTheme.colors.ButtonColor,
+                backgroundColor = ButtonColor,
                 contentColor = Color.White
             ),
             onClick = {
@@ -146,7 +141,7 @@ fun DropDownOptions(
             .onGloballyPositioned {
                 parentSize = it.size
             }
-            .background(MaterialTheme.colors.BackgroundColor)
+            .background(BackgroundColor)
             .height(56.dp)
             .clickable { expanded = true }
             .border(
@@ -166,6 +161,7 @@ fun DropDownOptions(
             Text(
                 text = selectedOption,
                 style = MaterialTheme.typography.subtitle1,
+                color = TextColor,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -178,12 +174,14 @@ fun DropDownOptions(
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = "Drop Down Arrow"
+                contentDescription = "Drop Down Arrow",
+                tint = TextColor
             )
         }
         DropdownMenu(
             modifier = Modifier
-                .width(with(LocalDensity.current) { parentSize.width.toDp() }),
+                .width(with(LocalDensity.current) { parentSize.width.toDp() })
+                .background(SwitcherBackground),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
@@ -195,7 +193,7 @@ fun DropDownOptions(
                         onOptionSelected(option.model)
                     }
                 ) {
-                    Text(text = option.model)
+                    Text(text = option.model, color = TextColor)
                 }
             }
         }
