@@ -32,6 +32,7 @@ This app template uses third-party service API ( openAI API ) and we do not prov
 <li>Supports Android 13.</li>
 
 </ul>
+
 ![](00.png)
 ![](01.png)
 ![](02.png)
