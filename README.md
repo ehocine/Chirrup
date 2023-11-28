@@ -30,7 +30,6 @@ This app template uses third-party service API ( openAI API ) and we do not prov
 <li>Admob integrated.</li>
 <li>Watch rewarded ads to earn more messages functionality.</li>  
 <li>Supports Android 13.</li>
-
 </ul>
 
 ![](00.png)
