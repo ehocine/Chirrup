@@ -1,4 +1,4 @@
-package com.hocel.chirrup.models
+package com.hocel.chirrup.data.models.chat
 
 data class ChatMessage(
     var message: String = "",

@@ -1,6 +1,7 @@
-package com.hocel.chirrup.views.forgot_password
+package com.hocel.chirrup.views.forgotPassword
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -36,7 +37,10 @@ fun ForgotPassword(navController: NavController) {
     val state by loadingState.collectAsState()
 
     Surface(
-        modifier = Modifier.clickable { focusManager.clearFocus() },
+        modifier = Modifier.clickable(
+            interactionSource = MutableInteractionSource(),
+            indication = null
+        ) { focusManager.clearFocus() },
         color = BackgroundColor
     ) {
         Box(

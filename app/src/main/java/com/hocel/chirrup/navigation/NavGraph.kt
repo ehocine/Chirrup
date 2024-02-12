@@ -9,14 +9,15 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import com.hocel.chirrup.utils.userLoggedIn
 import com.hocel.chirrup.viewmodels.MainViewModel
 import com.hocel.chirrup.views.chat.ChatScreen
-import com.hocel.chirrup.views.forgot_password.ForgotPassword
+import com.hocel.chirrup.views.forgotPassword.ForgotPassword
 import com.hocel.chirrup.views.home.HomeScreen
+import com.hocel.chirrup.views.imageGeneration.ImageGenerationScreen
+import com.hocel.chirrup.views.imageViewer.ImageViewerScreen
 import com.hocel.chirrup.views.login.LoginPage
 import com.hocel.chirrup.views.register.RegisterPage
-import com.hocel.chirrup.views.splash_screen.SplashScreen
+import com.hocel.chirrup.views.splashScreen.SplashScreen
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -174,6 +175,62 @@ fun NavGraph(
             }
         ) {
             ChatScreen(
+                navController = navController,
+                mainViewModel = mainViewModel,
+                keyboardController = keyboardController
+            )
+        }
+
+        composable(
+            route = Screens.ImageGenerationScreen.route,
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -300 },
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -300 },
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeIn(animationSpec = tween(300))
+            }
+        ) {
+            ImageGenerationScreen(
+                navController = navController,
+                mainViewModel = mainViewModel,
+                keyboardController = keyboardController
+            )
+        }
+
+        composable(
+            route = Screens.ImageViewerScreen.route,
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -300 },
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -300 },
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeIn(animationSpec = tween(300))
+            }
+        ) {
+            ImageViewerScreen(
                 navController = navController,
                 mainViewModel = mainViewModel,
                 keyboardController = keyboardController

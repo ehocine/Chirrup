@@ -1,4 +1,4 @@
-package com.hocel.chirrup.models.chatRequestBody
+package com.hocel.chirrup.data.models.chat.chatRequestBody
 
 data class Message(
     var content: String = "",

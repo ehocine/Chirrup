@@ -1,4 +1,4 @@
-package com.hocel.chirrup.models.chat_response
+package com.hocel.chirrup.data.models.chat.chat_response
 
 data class Usage(
     val completion_tokens: Int,

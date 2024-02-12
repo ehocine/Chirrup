@@ -9,14 +9,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -26,9 +27,11 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.hocel.chirrup.R
 import com.hocel.chirrup.components.*
-import com.hocel.chirrup.models.conversation.Conversation
+import com.hocel.chirrup.data.models.conversation.Conversation
 import com.hocel.chirrup.navigation.Screens
 import com.hocel.chirrup.ui.theme.*
+import com.hocel.chirrup.utils.ButtonOptions
+import com.hocel.chirrup.utils.Constants.CREDIT
 import com.hocel.chirrup.utils.Constants.MESSAGES_REWARD
 import com.hocel.chirrup.utils.ConversationHandlerAction
 import com.hocel.chirrup.utils.LoadingState
@@ -84,24 +87,21 @@ fun HomeScreen(
             }
         }) {
         Scaffold(floatingActionButton = {
-            ExtendedFloatingActionButton(text = {
-                Text(
-                    text = "Start a chat", color = Color.White
-                )
-            }, icon = {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    tint = Color.White,
-                    contentDescription = null
-                )
-            },
-                backgroundColor = ButtonColor,
-                onClick = {
-                    mainViewModel.resetMessages()
-                    mainViewModel.setConversationAction(ConversationHandlerAction.ADD)
-                    navController.navigate(Screens.ChatScreen.route)
+            ButtonDropMenu {
+                when (it) {
+                    ButtonOptions.Chat -> {
+                        mainViewModel.resetChatMessages()
+                        mainViewModel.setConversationAction(ConversationHandlerAction.ADD)
+                        navController.navigate(Screens.ChatScreen.route)
+                    }
+
+                    else -> {
+                        mainViewModel.resetImagesRequests()
+                        mainViewModel.setConversationAction(ConversationHandlerAction.ADD)
+                        navController.navigate(Screens.ImageGenerationScreen.route)
+                    }
                 }
-            )
+            }
         }, bottomBar = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                 // shows a banner ad
@@ -129,7 +129,7 @@ fun HomeScreen(
                     title = "Watch an ad to earn more",
                     message = {
                         Text(
-                            text = "Watch an ad to earn $MESSAGES_REWARD more messages",
+                            text = "Watch an ad to earn $MESSAGES_REWARD more $CREDIT",
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Normal,
                             color = TextColor,
@@ -171,7 +171,7 @@ fun HomeScreen(
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
-                                        text = "You have $messagesLimit message(s) left",
+                                        text = "You have $messagesLimit $CREDIT left",
                                         style = MaterialTheme.typography.subtitle1,
                                         fontWeight = FontWeight.Normal,
                                         color = Color.White,
@@ -192,13 +192,6 @@ fun HomeScreen(
                             if (user.conversations.isEmpty()) {
                                 NoResults()
                             } else {
-                                Text(
-                                    text = "Here are your chats",
-                                    textAlign = TextAlign.Start,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    color = TextColor,
-                                    modifier = Modifier.padding(16.dp)
-                                )
                                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                                     items(user.conversations) { conversation ->
                                         ConversationItem(
@@ -208,7 +201,13 @@ fun HomeScreen(
                                                     ConversationHandlerAction.UPDATE
                                                 )
                                                 mainViewModel.settingSelectedChat(it)
-                                                navController.navigate(Screens.ChatScreen.route)
+                                                if (conversation.chatConversation.listOfUserMessages.isNotEmpty()) {
+                                                    navController.navigate(Screens.ChatScreen.route)
+                                                } else {
+                                                    mainViewModel.setFromImageGenerationValue(false)
+                                                    mainViewModel.setPrompt(conversation.imageGenerationData.prompt)
+                                                    navController.navigate(Screens.ImageGenerationScreen.route)
+                                                }
                                             },
                                             enableDeleteAction = true,
                                             onDeleteConversation = {
@@ -224,6 +223,45 @@ fun HomeScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonDropMenu(chosenOption: (ButtonOptions) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    FloatingActionButton(
+        onClick = { expanded = true },
+        backgroundColor = ButtonColor,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            tint = Color.White,
+            contentDescription = ""
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(onClick = {
+                expanded = false
+                chosenOption(ButtonOptions.Chat)
+            }) {
+                Icon(imageVector = Icons.Default.Chat, contentDescription = "")
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(
+                    text = "Chat with AI",
+                    modifier = Modifier.padding(start = 5.dp),
+                )
+            }
+            DropdownMenuItem(onClick = {
+                expanded = false
+                chosenOption(ButtonOptions.GenerateImage)
+            }) {
+                Icon(imageVector = Icons.Default.Image, contentDescription = "")
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(
+                    text = "Generate images",
+                    modifier = Modifier.padding(start = 5.dp),
+                )
             }
         }
     }

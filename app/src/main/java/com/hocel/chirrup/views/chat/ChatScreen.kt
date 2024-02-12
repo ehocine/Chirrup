@@ -31,10 +31,12 @@ import com.hocel.chirrup.components.*
 import com.hocel.chirrup.components.chat.ChatInput
 import com.hocel.chirrup.components.chat.ReceivedMessageRow
 import com.hocel.chirrup.components.chat.SentMessageRow
-import com.hocel.chirrup.models.ChatMessage
-import com.hocel.chirrup.models.conversation.Conversation
+import com.hocel.chirrup.data.models.chat.ChatMessage
+import com.hocel.chirrup.data.models.conversation.ChatConversation
+import com.hocel.chirrup.data.models.conversation.Conversation
 import com.hocel.chirrup.ui.theme.*
 import com.hocel.chirrup.utils.*
+import com.hocel.chirrup.utils.Constants.CREDIT
 import com.hocel.chirrup.utils.Constants.MESSAGES_REWARD
 import com.hocel.chirrup.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
@@ -110,8 +112,10 @@ fun ChatScreen(
                                     scope = scope,
                                     action = mainViewModel.action,
                                     conversation = Conversation(
-                                        listOfUserMessages = mainViewModel.messagesOfUser,
-                                        listOfMessagesConversation = mainViewModel.messagesResponse
+                                       chatConversation =  ChatConversation(
+                                            listOfUserMessages = mainViewModel.messagesOfUser,
+                                            listOfMessagesConversation = mainViewModel.messagesResponse
+                                        )
                                     ),
                                     onAddSuccess = {
                                         mainViewModel.setGeneratingResponseState(LoadingState.IDLE)
@@ -212,7 +216,7 @@ fun ChatScreen(
                 title = "Watch an ad to earn more",
                 message = {
                     Text(
-                        text = "Watch an ad to earn $MESSAGES_REWARD more messages",
+                        text = "Watch an ad to earn $MESSAGES_REWARD more $CREDIT",
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Normal,
                         color = TextColor,
@@ -250,7 +254,7 @@ fun ChatScreen(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "You have $messagesLimit message(s) left",
+                            text = "You have $messagesLimit $CREDIT left",
                             style = MaterialTheme.typography.subtitle1,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
@@ -346,7 +350,7 @@ fun ChatScreen(
                                 messageFromBot = false
                             )
                         )
-                        mainViewModel.generateResponse(messageContent)
+                        mainViewModel.generateChatResponse(messageContent)
                     }
                 )
             }

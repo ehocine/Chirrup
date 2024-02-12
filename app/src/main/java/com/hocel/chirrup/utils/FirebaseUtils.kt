@@ -10,14 +10,18 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.hocel.chirrup.models.user.User
+import com.hocel.chirrup.data.models.user.User
 import com.hocel.chirrup.navigation.Screens
 import com.hocel.chirrup.utils.Constants.FIRESTORE_USERS_DATABASE
 import com.hocel.chirrup.utils.Constants.TIMEOUT_IN_MILLIS
 import com.hocel.chirrup.utils.Constants.auth
 import com.hocel.chirrup.utils.Constants.loadingState
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 //Register new user
 fun registerNewUser(

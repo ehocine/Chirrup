@@ -28,4 +28,6 @@ object Constants {
     const val TEMPERATURE = "temperature"
 
     const val API_KEY = "apikey"
+
+    const val CREDIT = "credit(s)"
 }

@@ -14,19 +14,31 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.hocel.chirrup.data.repository.CompletionRepository
+import com.hocel.chirrup.data.models.chat.ChatMessage
+import com.hocel.chirrup.data.models.chat.chatRequestBody.ChatRequestBody
+import com.hocel.chirrup.data.models.chat.chatRequestBody.Message
+import com.hocel.chirrup.data.models.conversation.Conversation
+import com.hocel.chirrup.data.models.imageGeneration.apiRequest.RequestBody
+import com.hocel.chirrup.data.models.imageGeneration.apiResponse.RequestResponse
+import com.hocel.chirrup.data.models.user.User
+import com.hocel.chirrup.data.repository.ChirrupRepository
 import com.hocel.chirrup.data.repository.DataStoreRepository
-import com.hocel.chirrup.models.ChatMessage
-import com.hocel.chirrup.models.chatRequestBody.ChatRequestBody
-import com.hocel.chirrup.models.chatRequestBody.Message
-import com.hocel.chirrup.models.conversation.Conversation
-import com.hocel.chirrup.models.user.User
 import com.hocel.chirrup.navigation.Screens
-import com.hocel.chirrup.utils.*
+import com.hocel.chirrup.utils.AppInterceptor
+import com.hocel.chirrup.utils.ChatModels
+import com.hocel.chirrup.utils.ChatSheetStateContent
+import com.hocel.chirrup.utils.Constants
 import com.hocel.chirrup.utils.Constants.FIRESTORE_USERS_DATABASE
 import com.hocel.chirrup.utils.Constants.LIST_OF_CONVERSATIONS
 import com.hocel.chirrup.utils.Constants.MESSAGES_LIMIT
 import com.hocel.chirrup.utils.Constants.auth
+import com.hocel.chirrup.utils.ConversationHandlerAction
+import com.hocel.chirrup.utils.ImageSize
+import com.hocel.chirrup.utils.LoadingState
+import com.hocel.chirrup.utils.MessageLimitHandlerAction
+import com.hocel.chirrup.utils.TemperatureData
+import com.hocel.chirrup.utils.hasInternetConnection
+import com.hocel.chirrup.utils.toast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,9 +51,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val completionRepository: CompletionRepository,
+    private val chirrupRepository: ChirrupRepository,
     private val appInterceptor: AppInterceptor,
-    private val dataStoreRepository: DataStoreRepository,
+    private val dataStoreRepository: DataStoreRepository
 ) : ViewModel() {
 
     private val readChatGptData = dataStoreRepository.readChatGptData
@@ -70,12 +82,18 @@ class MainViewModel @Inject constructor(
     val settingPreviousConversationState: StateFlow<LoadingState> =
         _settingPreviousConversationState
 
+    var promptModified = mutableStateOf(false)
+        private set
+
+    var fromImageGeneration = mutableStateOf(false)
+        private set
+
     private var openaiAPIKey: String = ""
 
     var action: ConversationHandlerAction by mutableStateOf(ConversationHandlerAction.ADD)
         private set
 
-    private var previousConversation: Conversation by mutableStateOf(Conversation())
+    var previousConversation: Conversation by mutableStateOf(Conversation())
 
     var sheetStateContent: MutableStateFlow<ChatSheetStateContent> =
         MutableStateFlow(ChatSheetStateContent.Save)
@@ -85,6 +103,21 @@ class MainViewModel @Inject constructor(
         private set
 
     var temperature = TemperatureData.BALANCED
+        private set
+
+    var imagesRequestBody = RequestBody()
+        private set
+
+    var requestImagesResponse: RequestResponse by mutableStateOf(RequestResponse())
+        private set
+
+    var numberOfImages = 1
+        private set
+
+    var imageSize = ImageSize.SMALL
+        private set
+
+    var prompt = mutableStateOf("")
         private set
 
     init {
@@ -144,7 +177,8 @@ class MainViewModel @Inject constructor(
     fun getUserInfo(context: Context) {
         val db = Firebase.firestore
         val currentUser = Firebase.auth.currentUser
-        val data = currentUser?.let { db.collection(FIRESTORE_USERS_DATABASE).document(it.uid) }
+        val data = currentUser?.let {
+            db.collection(FIRESTORE_USERS_DATABASE).document(it.uid) }
         if (hasInternetConnection(context)) {
             if (currentUser != null) {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -205,6 +239,7 @@ class MainViewModel @Inject constructor(
                                 "Something went wrong: $it".toast(context, Toast.LENGTH_SHORT)
                             }
                         }
+
                         ConversationHandlerAction.REMOVE -> {
                             data?.update(
                                 LIST_OF_CONVERSATIONS, FieldValue.arrayRemove(conversation)
@@ -220,6 +255,7 @@ class MainViewModel @Inject constructor(
                                 "Something went wrong: $it".toast(context, Toast.LENGTH_SHORT)
                             }
                         }
+
                         ConversationHandlerAction.UPDATE -> {
                             data?.update(
                                 LIST_OF_CONVERSATIONS, FieldValue.arrayRemove(previousConversation)
@@ -261,12 +297,12 @@ class MainViewModel @Inject constructor(
         this.action = action
     }
 
-    fun generateResponse(message: String) {
+    fun generateChatResponse(message: String) {
         viewModelScope.launch {
             try {
                 _generatingResponseState.emit(LoadingState.LOADING)
                 addMessageOfUser(message)
-                val response = completionRepository.getChatResponse(
+                val response = chirrupRepository.getChatResponse(
                     ChatRequestBody(
                         model = model,
                         messages = messagesOfUser,
@@ -286,6 +322,41 @@ class MainViewModel @Inject constructor(
                         currentMessagesLimit = _userInfo.value.messagesLimit,
                         action = MessageLimitHandlerAction.SUBSTRACT,
                         amount = 1
+                    )
+                } else {
+                    _generatingResponseState.emit(LoadingState.ERROR)
+                }
+            } catch (e: Exception) {
+                _generatingResponseState.emit(LoadingState.ERROR)
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun generateImagesResponse(prompt: String) {
+        viewModelScope.launch {
+            try {
+                _generatingResponseState.emit(LoadingState.LOADING)
+                setImagesRequestBody(
+                    RequestBody(
+                        prompt = prompt,
+                        n = numberOfImages,
+                        size = imageSize.size
+                    )
+                )
+                val response = chirrupRepository.getImageResponse(imagesRequestBody)
+                if (response.isSuccessful) {
+                    setImagesRequestResponse(
+                        RequestResponse(
+                            created = System.currentTimeMillis(),
+                            data = response.body()!!.data
+                        )
+                    )
+                    _generatingResponseState.emit(LoadingState.LOADED)
+                    messagesLimitHandler(
+                        currentMessagesLimit = _userInfo.value.messagesLimit,
+                        action = MessageLimitHandlerAction.SUBSTRACT,
+                        amount = numberOfImages
                     )
                 } else {
                     _generatingResponseState.emit(LoadingState.ERROR)
@@ -317,13 +388,16 @@ class MainViewModel @Inject constructor(
 
             // This is used too keep track of the previous conversation in order to update it
             previousConversation = conversation
-            resetMessages()
-            conversation.listOfUserMessages.forEach { message ->
+            resetChatMessages()
+            resetImagesRequests()
+            conversation.chatConversation.listOfUserMessages.forEach { message ->
                 addMessageOfUser(message.content)
             }
-            conversation.listOfMessagesConversation.forEach { chatMessage ->
+            conversation.chatConversation.listOfMessagesConversation.forEach { chatMessage ->
                 addMessage(chatMessage)
             }
+
+            setImagesRequestResponse(conversation.imageGenerationData.requestResponse)
             _settingPreviousConversationState.emit(LoadingState.LOADED)
         }
     }
@@ -342,6 +416,7 @@ class MainViewModel @Inject constructor(
                             MESSAGES_LIMIT, currentMessagesLimit + amount
                         )
                     }
+
                     MessageLimitHandlerAction.SUBSTRACT -> {
                         data?.update(
                             MESSAGES_LIMIT, currentMessagesLimit - amount
@@ -354,7 +429,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun resetMessages() {
+    fun resetChatMessages() {
         messagesResponse = listOf()
         messagesOfUser = listOf()
     }
@@ -369,6 +444,39 @@ class MainViewModel @Inject constructor(
 
     fun setChatSheetStateContent(sheetStateContent: ChatSheetStateContent) {
         this.sheetStateContent.value = sheetStateContent
+    }
+
+    private fun setImagesRequestBody(newRequest: RequestBody) {
+        imagesRequestBody = newRequest
+    }
+
+    fun setNumberOfImages(number: Int) {
+        numberOfImages = number
+    }
+
+    fun setImageSize(size: ImageSize) {
+        imageSize = size
+    }
+
+    private fun setImagesRequestResponse(newRequestResponse: RequestResponse) {
+        requestImagesResponse = newRequestResponse
+    }
+
+    fun resetImagesRequests() {
+        requestImagesResponse = RequestResponse()
+        imagesRequestBody = RequestBody()
+    }
+
+    fun setPromptModifiedValue(value: Boolean) {
+        promptModified.value = value
+    }
+
+    fun setFromImageGenerationValue(value: Boolean) {
+        fromImageGeneration.value = value
+    }
+
+    fun setPrompt(mPrompt: String) {
+        prompt.value = mPrompt
     }
 
     fun signOut(

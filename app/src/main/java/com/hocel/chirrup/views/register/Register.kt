@@ -1,6 +1,7 @@
 package com.hocel.chirrup.views.register
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,7 +52,10 @@ fun RegisterPage(
     var passwordVisibility by remember { mutableStateOf(false) }
 
     Surface(
-        modifier = Modifier.clickable { focusManager.clearFocus() },
+        modifier = Modifier.clickable(
+            interactionSource = MutableInteractionSource(),
+            indication = null
+        ) { focusManager.clearFocus() },
         color = BackgroundColor
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

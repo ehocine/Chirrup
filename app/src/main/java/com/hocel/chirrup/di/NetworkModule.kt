@@ -1,6 +1,6 @@
 package com.hocel.chirrup.di
 
-import com.hocel.chirrup.data.api.CompletionAPIService
+import com.hocel.chirrup.data.api.ChirrupAPIService
 import com.hocel.chirrup.utils.AppInterceptor
 import com.hocel.chirrup.utils.Constants.BASE_URL
 import dagger.Module
@@ -57,7 +57,7 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideApiService(retrofit: Retrofit): CompletionAPIService {
-        return retrofit.create(CompletionAPIService::class.java)
+    fun provideApiService(retrofit: Retrofit): ChirrupAPIService {
+        return retrofit.create(ChirrupAPIService::class.java)
     }
 }

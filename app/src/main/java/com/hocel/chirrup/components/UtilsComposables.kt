@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -392,6 +393,41 @@ fun ChatDropMenu(onSaveClicked: () -> Unit, onSettingsClicked: () -> Unit) {
                     Spacer(modifier = Modifier.padding(5.dp))
                     Text(
                         text = "Settings",
+                        modifier = Modifier.padding(start = 5.dp),
+                        color = TextColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ChatDropMenu(title: String, icon: ImageVector, onClick: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    IconButton(onClick = { expanded = true }) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = "Menu",
+            tint = TextColor
+        )
+        DropdownMenu(
+            modifier = Modifier.background(CardColor),
+            expanded = expanded,
+            onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onClick()
+            }) {
+                Row(Modifier.fillMaxWidth()) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = TextColor
+                    )
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Text(
+                        text = title,
                         modifier = Modifier.padding(start = 5.dp),
                         color = TextColor
                     )

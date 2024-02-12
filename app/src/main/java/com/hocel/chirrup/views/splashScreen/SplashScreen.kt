@@ -1,4 +1,4 @@
-package com.hocel.chirrup.views.splash_screen
+package com.hocel.chirrup.views.splashScreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

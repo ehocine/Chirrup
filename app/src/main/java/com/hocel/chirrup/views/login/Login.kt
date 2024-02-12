@@ -1,6 +1,7 @@
 package com.hocel.chirrup.views.login
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +55,10 @@ fun LoginPage(
     val state by loadingState.collectAsState()
 
     Surface(
-        modifier = Modifier.clickable { focusManager.clearFocus() },
+        modifier = Modifier.clickable(
+            interactionSource = MutableInteractionSource(),
+            indication = null
+        ) { focusManager.clearFocus() },
         color = BackgroundColor
     ) {
         Box(

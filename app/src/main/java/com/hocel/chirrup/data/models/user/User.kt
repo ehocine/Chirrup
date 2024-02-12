@@ -1,6 +1,6 @@
-package com.hocel.chirrup.models.user
+package com.hocel.chirrup.data.models.user
 
-import com.hocel.chirrup.models.conversation.Conversation
+import com.hocel.chirrup.data.models.conversation.Conversation
 
 data class User(
     var userID: String = "",
